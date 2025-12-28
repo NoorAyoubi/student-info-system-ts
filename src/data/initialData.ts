@@ -1,5 +1,7 @@
  import { Course } from '../models/Course';
 import { DegreeRequirement } from '../models/DegreeRequirement';
+import { Course } from '../models/Course';
+
 
 export const initialDegreeReqs: DegreeRequirement[] = [
   { id: '1', name: 'מתמטיקה בסיסית', type: 'חובה', courseIds: [] },
@@ -16,7 +18,7 @@ export const initialDegreeReqs: DegreeRequirement[] = [
 
 
 ];
-import { Course } from '../models/Course';
+
 
 export const initialCourses: Course[] = [
   { id:'1', code:'CS101', name:'Intro', credits:3, semester:1, status:'פעיל' },
