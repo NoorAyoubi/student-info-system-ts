@@ -1,6 +1,14 @@
+import { Course } from '../models/Course';
 
 export function loadInitialData() {
   if (!localStorage.getItem('courses')) {
-    localStorage.setItem('courses', JSON.stringify(Array.from({length:10},(_,i)=>({id:'C'+i,name:'Course '+i,status:'active'}))))
+    const courses: Course[] = Array.from({ length: 10 }, (_, i) => ({
+      id: `CS${100 + i}`,
+      name: `קורס ${i + 1}`,
+      syllabus: 'תיאור קורס לדוגמה',
+      status: 'active'
+    }));
+
+    localStorage.setItem('courses', JSON.stringify(courses));
   }
 }
