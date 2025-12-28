@@ -1,3 +1,4 @@
+ import { Course } from '../models/Course';
 import { DegreeRequirement } from '../models/DegreeRequirement';
 
 export const initialDegreeReqs: DegreeRequirement[] = [
@@ -11,7 +12,7 @@ export const initialDegreeReqs: DegreeRequirement[] = [
   { id: '8', name: 'סייבר', type: 'בחירה', courseIds: [] },
   { id: '9', name: 'גרפיקה', type: 'בחירה', courseIds: [] },
   { id: '10', name: 'פרויקט גמר', type: 'חובה', courseIds: [] }
-  import { Course } from '../models/Course';
+ 
 
 
 ];
