@@ -1,14 +1,12 @@
-import { Course } from '../models/Course';
+import { Student } from '../models/Student';
 
-export function loadInitialData() {
-  if (!localStorage.getItem('courses')) {
-    const courses: Course[] = Array.from({ length: 10 }, (_, i) => ({
-      id: `CS${100 + i}`,
-      name: `קורס ${i + 1}`,
-      syllabus: 'תיאור קורס לדוגמה',
-      status: 'active'
-    }));
+if (!localStorage.getItem('students')) {
+  const students: Student[] = Array.from({ length: 10 }, (_, i) => ({
+    id: `30000000${i}`,
+    fullName: `סטודנט ${i + 1}`,
+    email: `student${i + 1}@mail.com`,
+    status: 'active'
+  }));
 
-    localStorage.setItem('courses', JSON.stringify(courses));
-  }
+  localStorage.setItem('students', JSON.stringify(students));
 }
