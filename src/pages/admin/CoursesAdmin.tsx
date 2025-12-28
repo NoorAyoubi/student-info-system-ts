@@ -1,80 +1,55 @@
 import { useEffect, useState } from 'react';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Stack,
-  Typography
+  Table, TableHead, TableRow, TableCell,
+  TableBody, Button, Stack, Typography, Paper
 } from '@mui/material';
 import { Course } from '../../models/Course';
 import { storageService } from '../../services/storageService';
 import CourseForm from '../../forms/CourseForm';
 
 export default function CoursesAdmin() {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<Course | undefined>();
+  const [list, setList] = useState<Course[]>([]);
+  const [selected, setSelected] = useState<Course>();
 
-  const loadCourses = () => {
-    setCourses(storageService.get<Course>('courses'));
-    setSelectedCourse(undefined);
+  const load = () => {
+    setList(storageService.get<Course>('courses'));
+    setSelected(undefined);
   };
 
-  useEffect(() => {
-    loadCourses();
-  }, []);
+  useEffect(load, []);
 
   return (
-    <Stack spacing={3} sx={{ p: 3 }}>
-      <Typography variant="h5">ניהול קורסים</Typography>
+    <Stack spacing={3}>
+      <Typography variant="h4">ניהול קורסים</Typography>
 
-      <CourseForm
-        selectedCourse={selectedCourse}
-        onSave={loadCourses}
-      />
-
-      <Paper>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>קוד</TableCell>
-              <TableCell>שם</TableCell>
-              <TableCell>סטטוס</TableCell>
-              <TableCell>פעולות</TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {courses.map(course => (
-              <TableRow key={course.id}>
-                <TableCell>{course.id}</TableCell>
-                <TableCell>{course.name}</TableCell>
-                <TableCell>{course.status}</TableCell>
-                <TableCell>
-                  <Button
-                    size="small"
-                    onClick={() => setSelectedCourse(course)}
-                  >
-                    עריכה
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-
-            {courses.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={4} align="center">
-                  אין קורסים להצגה
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+      <Paper sx={{ p: 2 }}>
+        <CourseForm selected={selected} onSave={load} />
       </Paper>
+
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>קוד</TableCell>
+            <TableCell>שם</TableCell>
+            <TableCell>נ"ז</TableCell>
+            <TableCell>סמסטר</TableCell>
+            <TableCell />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {list.map(c => (
+            <TableRow key={c.id}>
+              <TableCell>{c.code}</TableCell>
+              <TableCell>{c.name}</TableCell>
+              <TableCell>{c.credits}</TableCell>
+              <TableCell>{c.semester}</TableCell>
+              <TableCell>
+                <Button onClick={() => setSelected(c)}>עריכה</Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </Stack>
   );
 }
-
