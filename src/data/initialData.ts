@@ -1,6 +1,6 @@
  import { Course } from '../models/Course';
 import { DegreeRequirement } from '../models/DegreeRequirement';
-import { Course } from '../models/Course';
+
 
 
 export const initialDegreeReqs: DegreeRequirement[] = [
