@@ -1,144 +1,109 @@
 import { useEffect, useState } from 'react';
 import {
-  Button,
   TextField,
+  Button,
   Stack,
-  MenuItem,
   Snackbar,
-  Alert
+  MenuItem
 } from '@mui/material';
 import { Course } from '../models/Course';
 import { storageService } from '../services/storageService';
+import { isCourseCodeValid } from '../utils/validators';
 
 interface Props {
-  selectedCourse?: Course;
+  selected?: Course;
   onSave: () => void;
 }
 
-export default function CourseForm({ selectedCourse, onSave }: Props) {
-  const [course, setCourse] = useState<Course>({
-    id: '',
-    name: '',
-    syllabus: '',
-    status: 'active'
-  });
+export default function CourseForm({ selected, onSave }: Props) {
+  const [code, setCode] = useState('');
+  const [name, setName] = useState('');
+  const [credits, setCredits] = useState(0);
+  const [semester, setSemester] = useState(1);
+  const [open, setOpen] = useState(false);
 
-  const [errors, setErrors] = useState({
-    id: '',
-    name: ''
-  });
-
-  const [success, setSuccess] = useState(false);
+  const valid =
+    isCourseCodeValid(code) &&
+    name.trim() !== '' &&
+    credits > 0;
 
   useEffect(() => {
-    if (selectedCourse) {
-      setCourse(selectedCourse);
+    if (selected) {
+      setCode(selected.code);
+      setName(selected.name);
+      setCredits(selected.credits);
+      setSemester(selected.semester);
     }
-  }, [selectedCourse]);
+  }, [selected]);
 
-  const validate = () => {
-    const newErrors = { id: '', name: '' };
-    let valid = true;
+  const save = () => {
+    const list = storageService.get<Course>('courses');
 
-    if (!course.id.trim()) {
-      newErrors.id = 'קוד קורס הוא שדה חובה';
-      valid = false;
+    if (selected) {
+      const i = list.findIndex(c => c.id === selected.id);
+      list[i] = { ...selected, code, name, credits, semester };
     } else {
-      const courses = storageService.get<Course>('courses');
-      const exists = courses.some(
-        c => c.id === course.id && c.id !== selectedCourse?.id
-      );
-      if (exists) {
-        newErrors.id = 'קוד קורס כבר קיים';
-        valid = false;
-      }
+      list.push({
+        id: Date.now().toString(),
+        code,
+        name,
+        credits,
+        semester,
+        status: 'פעיל'
+      });
     }
 
-    if (!course.name.trim()) {
-      newErrors.name = 'שם קורס הוא שדה חובה';
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
-  const handleSubmit = () => {
-    if (!validate()) return;
-
-    if (selectedCourse) {
-      storageService.update<Course>('courses', course);
-    } else {
-      storageService.add<Course>('courses', course);
-    }
-
-    setSuccess(true);
+    storageService.set('courses', list);
+    setOpen(true);
     onSave();
-
-    setCourse({
-      id: '',
-      name: '',
-      syllabus: '',
-      status: 'active'
-    });
   };
 
   return (
-    <Stack spacing={2} sx={{ maxWidth: 400 }}>
+    <Stack spacing={2}>
       <TextField
         label="קוד קורס"
-        value={course.id}
+        value={code}
         required
-        error={!!errors.id}
-        helperText={errors.id}
-        onChange={e => setCourse({ ...course, id: e.target.value })}
-        disabled={!!selectedCourse}
+        error={!isCourseCodeValid(code)}
+        helperText="פורמט: CS123"
+        onChange={e => setCode(e.target.value)}
       />
 
       <TextField
         label="שם קורס"
-        value={course.name}
+        value={name}
         required
-        error={!!errors.name}
-        helperText={errors.name}
-        onChange={e => setCourse({ ...course, name: e.target.value })}
+        onChange={e => setName(e.target.value)}
       />
 
       <TextField
-        label="סילבוס"
-        value={course.syllabus}
-        multiline
-        rows={3}
-        onChange={e => setCourse({ ...course, syllabus: e.target.value })}
+        type="number"
+        label='נ"ז'
+        value={credits}
+        onChange={e => setCredits(+e.target.value)}
       />
 
       <TextField
         select
-        label="סטטוס"
-        value={course.status}
-        onChange={e =>
-          setCourse({ ...course, status: e.target.value as any })
-        }
+        label="סמסטר"
+        value={semester}
+        onChange={e => setSemester(+e.target.value)}
       >
-        <MenuItem value="active">פעיל</MenuItem>
-        <MenuItem value="inactive">לא פעיל</MenuItem>
+        {[1,2,3,4,5,6].map(s => (
+          <MenuItem key={s} value={s}>{s}</MenuItem>
+        ))}
       </TextField>
 
-      <Button
-        variant="contained"
-        onClick={handleSubmit}
-        disabled={!course.id || !course.name}
-      >
+      <Button disabled={!valid} variant="contained" onClick={save}>
         שמירה
       </Button>
 
       <Snackbar
-        open={success}
+        open={open}
         autoHideDuration={3000}
-        onClose={() => setSuccess(false)}
-      >
-        <Alert severity="success">הקורס נשמר בהצלחה</Alert>
-      </Snackbar>
+        message="קורס נשמר בהצלחה"
+        onClose={() => setOpen(false)}
+      />
     </Stack>
   );
 }
