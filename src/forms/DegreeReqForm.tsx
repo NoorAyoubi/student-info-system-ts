@@ -1,1 +1,6 @@
-export default function DegreeReqForm(){return <div>Degree Form</div>}
+export interface DegreeRequirement {
+  id: string;
+  name: string;
+  type: 'חובה' | 'בחירה';
+  courseIds: string[];
+}
