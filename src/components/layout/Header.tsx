@@ -1,20 +1,58 @@
-import { AppBar, Toolbar, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Box,
+  Button,
+} from '@mui/material';
+import { Menu as MenuIcon } from '@mui/icons-material';
+import { Link } from 'react-router-dom';
 
-export default function Header() {
-  const nav = useNavigate();
+interface HeaderProps {
+  onMenuClick: () => void;
+  title?: string;
+}
 
+const Header: React.FC<HeaderProps> = ({ onMenuClick, title = 'College Management System' }) => {
   return (
-    <AppBar position="static">
+    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar>
-        <Typography
-          variant="h6"
-          sx={{ cursor: 'pointer' }}
-          onClick={() => nav('/')}
+        <IconButton
+          color="inherit"
+          edge="start"
+          onClick={onMenuClick}
+          sx={{ mr: 2 }}
         >
-          Student Info System
+          <MenuIcon />
+        </IconButton>
+        
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          {title}
         </Typography>
+
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button 
+            color="inherit" 
+            component={Link} 
+            to="/student-profile"
+            sx={{ textDecoration: 'none' }}
+          >
+            Profile
+          </Button>
+          <Button 
+            color="inherit" 
+            component={Link} 
+            to="/students"
+            sx={{ textDecoration: 'none' }}
+          >
+            Students
+          </Button>
+        </Box>
       </Toolbar>
     </AppBar>
   );
-}
+};
+
+export default Header;
